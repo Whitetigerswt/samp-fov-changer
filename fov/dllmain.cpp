@@ -88,7 +88,7 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x051D5AB, 10, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x051D5AB, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
-	// Patch so you won't zoom in when aiming
+	// Patch so you won't change FOV when aiming
 	VirtualProtect((void*)0x05216BE, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x05216BE, "\x90\x90\x90\x90\x90\x90", 6);
 
