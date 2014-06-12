@@ -3,6 +3,8 @@ samp-fov-changer
 
 Change FOV like in many FPS games, in SA-MP. I won't explain what FOV is, just google it. I'll be assuming you know what it is, and what it does.
 
+Tested only on EURO v1.0 .EXE
+
 
 How to change your FOV
 -----------------
