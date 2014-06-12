@@ -23,13 +23,13 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
-float g_iFov = 70.0f;
+float g_fFov = 70.0f;
 
 DWORD dw_FovJmpBack1 = 0x0522F7E;
 void _declspec(naked) MouseSensitivityHook() {
 	
 	_asm pushad
-	_asm mov eax,[g_iFov]
+	_asm mov eax,[g_fFov]
 	_asm mov [edi+0x0B4],eax
 	_asm popad
 	_asm jmp [dw_FovJmpBack1]
@@ -60,6 +60,20 @@ void SetFov(float fov) {
 
 void WINAPI Load() {
 
+	std::ifstream ifile("fov.cfg");	
+	if (ifile) {
+		if(ifile >> g_fFov) {
+
+		}
+		ifile.close();
+	} else {
+		std::ofstream ofile("fov.cfg");
+		ofile << "70.0" << std::endl;
+		ofile.close();
+
+		g_fFov = 70.0f;
+	}
+
 	// Hook sniper aim
 	DWORD oldProt = NULL;
 	VirtualProtect((void*)0x0522F74, 10, PAGE_EXECUTE_READWRITE, &oldProt);
@@ -68,19 +82,6 @@ void WINAPI Load() {
 	while(*(int*)0xB6F5F0 == 0) { 
 		Sleep(5);
 	}
-
-	float fov = 70.0f;
-	std::ifstream ifile("fov.cfg");	
-	if (ifile) {
-		if(ifile >> fov) {
-
-		}
-		ifile.close();
-	} else {
-		fov = 70.0f;
-	}
-
-	g_iFov = fov;
 	
 
 	// NOP a mov instruction to address 0x0B6F250
@@ -109,7 +110,7 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x0522F6A, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x0522F6A, "\x90\x90\x90\x90\x90\x90", 6);
 
-	SetFov(fov);
+	SetFov(g_fFov);
 
 
 }
