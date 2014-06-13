@@ -8,7 +8,7 @@ Tested only on EURO v1.0 .EXE
 
 How to change your FOV
 -----------------
-The mod will create fov.cfg in your GTA directory after first load. all that this file can contain is a number, which is your FOV. the default is 70. I'm personally using 100. The game has some limits to what you can make your FOV, since San Andreas was not designed so you could change your FOV. problems for this start to occur around 120.
+The mod will create fov.cfg in your GTA directory after first load. all that this file can contain is a number, which is your FOV. the default is 70. I'm personally using 100. Although you can have your FOV as high as you'd like, the game is really not playable at anything over 170, and there are noticeable bugs at around 120
 
 You can use FOV's with decimals. example: 75.3 or 84.4444
 
