@@ -54,6 +54,7 @@ void _declspec(naked) MouseSensitivityHook_3() {
 }
 
 void SetFov(float fov) {
+	*(float*)0x0858CE0 = fov;
 	*(float*)0x0B6F250 = fov;
 }
 
@@ -92,6 +93,9 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x05216BE, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x05216BE, "\x90\x90\x90\x90\x90\x90", 6);
 
+	// Make it so when you get in a car FOV is not reset
+	VirtualProtect((void*)0x0522F47, 6, PAGE_EXECUTE_READWRITE, &oldProt);
+	memcpy((void*)0x0522F47, "\x90\x90\x90\x90\x90\x90", 6);
 
 	//--------------
 
