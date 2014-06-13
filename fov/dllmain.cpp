@@ -75,27 +75,31 @@ void WINAPI Load() {
 		g_fFov = 70.0f;
 	}
 
-	// Hook sniper aim
-	DWORD oldProt = NULL;
-	VirtualProtect((void*)0x0522F74, 10, PAGE_EXECUTE_READWRITE, &oldProt);
-	HookInstall(0x0522F74, (DWORD)MouseSensitivityHook, 10);
 
 	while(*(int*)0xB6F5F0 == 0) { 
 		Sleep(5);
 	}
 	
+	// Hook sniper aim
+	DWORD oldProt = NULL;
+	VirtualProtect((void*)0x0522F74, 10, PAGE_EXECUTE_READWRITE, &oldProt);
+	HookInstall(0x0522F74, (DWORD)MouseSensitivityHook, 10);
 
 	// NOP a mov instruction to address 0x0B6F250
 	VirtualProtect((void*)0x051D5AB, 10, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x051D5AB, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
-	// Patch so you won't change FOV when aiming
+	// Patch so the game won't change FOV when you aim.
 	VirtualProtect((void*)0x05216BE, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x05216BE, "\x90\x90\x90\x90\x90\x90", 6);
 
 	// Make it so when you get in a car FOV is not reset
 	VirtualProtect((void*)0x0522F47, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x0522F47, "\x90\x90\x90\x90\x90\x90", 6);
+
+	// NOP a mov instruction to 0x0B6F250 when entering a car
+	VirtualProtect((void*)0x0524BDE, 10, PAGE_EXECUTE_READWRITE, &oldProt);
+	memcpy((void*)0x0524BDE, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
 	//--------------
 
@@ -115,6 +119,5 @@ void WINAPI Load() {
 	memcpy((void*)0x0522F6A, "\x90\x90\x90\x90\x90\x90", 6);
 
 	SetFov(g_fFov);
-
 
 }
