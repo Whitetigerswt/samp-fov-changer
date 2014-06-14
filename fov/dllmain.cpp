@@ -1,6 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include <Windows.h>
 #include <fstream>
+#include <string>
 
 #include "multiplayer_hooksystem.h"
 
@@ -23,15 +24,21 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+void SetFov(float fov) {
+	*(float*)0x0858CE0 = fov;
+	*(float*)0x0B6F250 = fov;
+}
+
 float g_fFov = 70.0f;
+float g_fZoom = 3.0f;
 
 DWORD dw_FovJmpBack1 = 0x0522F7E;
 void _declspec(naked) MouseSensitivityHook() {
 	
-	_asm pushad
+	_asm push eax
 	_asm mov eax,[g_fFov]
 	_asm mov [edi+0x0B4],eax
-	_asm popad
+	_asm pop eax
 	_asm jmp [dw_FovJmpBack1]
 
 }
@@ -53,33 +60,65 @@ void _declspec(naked) MouseSensitivityHook_3() {
 
 }
 
-void SetFov(float fov) {
-	*(float*)0x0858CE0 = fov;
-	*(float*)0x0B6F250 = fov;
+DWORD dw_FovJmpBack4 = 0x052C160;
+void _declspec(naked) AimHook() {
+	
+	_asm fld [g_fFov]
+	_asm pushad
+	SetFov(g_fFov);
+	_asm popad
+	_asm jmp [dw_FovJmpBack4]
+
+
 }
+
+DWORD dw_FovJmpBack5 = 0x0521680;
+void _declspec(naked) ZoomHook() {
+	
+	_asm fld [g_fZoom]
+	_asm jmp [dw_FovJmpBack5]
+
+}
+
+DWORD dw_FovJmpBack6 = 0x05108B0;
+void _declspec(naked) SniperZoomOutHook() {
+	
+	_asm push eax
+	_asm mov eax,[g_fFov]
+	_asm mov dword ptr ds:[edi],eax
+	_asm pop eax
+	_asm jmp [dw_FovJmpBack6]
+
+}
+
 
 
 void WINAPI Load() {
 
 	std::ifstream ifile("fov.cfg");	
 	if (ifile) {
-		if(ifile >> g_fFov) {
-
+		std::string type = "";
+		float value = 0.0f;
+		while(ifile >> type >> value) {
+			if(type.compare("fov") == 0) {
+				g_fFov = value;
+			} else if(type.compare("zoom") == 0) {
+				g_fZoom = value;
+			}
 		}
 		ifile.close();
 	} else {
 		std::ofstream ofile("fov.cfg");
-		ofile << "70.0" << std::endl;
+		ofile << "fov " << g_fFov << std::endl;
+		ofile << "zoom 0.0 ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then put it as 3.0 or you will have trouble hitting people when you're using high FOV." << std::endl;
 		ofile.close();
-
-		g_fFov = 70.0f;
 	}
-
 
 	while(*(int*)0xB6F5F0 == 0) { 
 		Sleep(5);
 	}
 	
+
 	// Hook sniper aim
 	DWORD oldProt = NULL;
 	VirtualProtect((void*)0x0522F74, 10, PAGE_EXECUTE_READWRITE, &oldProt);
@@ -89,9 +128,14 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x051D5AB, 10, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x051D5AB, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
-	// Patch so the game won't change FOV when you aim.
-	VirtualProtect((void*)0x05216BE, 6, PAGE_EXECUTE_READWRITE, &oldProt);
-	memcpy((void*)0x05216BE, "\x90\x90\x90\x90\x90\x90", 6);
+	VirtualProtect((void*)0x052C159, 6, PAGE_EXECUTE_READWRITE, &oldProt);
+	HookInstall(0x052C159, (DWORD)AimHook, 6);
+
+	VirtualProtect((void*)0x052167A, 7, PAGE_EXECUTE_READWRITE, &oldProt);
+	HookInstall(0x052167A, (DWORD)ZoomHook, 7);
+
+	VirtualProtect((void*)0x05108AA, 6, PAGE_EXECUTE_READWRITE, &oldProt);
+	HookInstall(0x05108AA, (DWORD)SniperZoomOutHook, 6);
 
 	// Make it so when you get in a car FOV is not reset
 	VirtualProtect((void*)0x0522F47, 6, PAGE_EXECUTE_READWRITE, &oldProt);
@@ -100,6 +144,10 @@ void WINAPI Load() {
 	// NOP a mov instruction to 0x0B6F250 when entering a car
 	VirtualProtect((void*)0x0524BDE, 10, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x0524BDE, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
+
+	// NOP a mov instruction to 0x0B6F250 called when you zoom all the out of a sniper
+	VirtualProtect((void*)0x0509BD0, 2, PAGE_EXECUTE_READWRITE, &oldProt);
+	memcpy((void*)0x0509BD0, "\x90\x90", 2);
 
 	//--------------
 
@@ -118,6 +166,8 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x0522F6A, 6, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x0522F6A, "\x90\x90\x90\x90\x90\x90", 6);
 
+
 	SetFov(g_fFov);
+
 
 }
