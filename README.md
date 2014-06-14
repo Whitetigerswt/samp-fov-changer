@@ -38,13 +38,9 @@ stock GetPlayerFOV(playerid) {
 	// 0.667 is just a temp number until I can check what SA-MP is actually doing to these numbers, it adds decent accuracy across most playable FOV's.
 	return GetPlayerCameraZoom(playerid) + 0.667;
 }
-
-// or
-
-#define GetPlayerFOV(%0) ((GetPlayerCameraZoom(%0)) + (0.667))
 ```
 
-GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS, so when we pass over 70, it wraps around back to 35.
+GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS, so when we pass over 70, it wraps around back to 35. Also you should only use this function while a player isn't aiming with a zoom weapon, sniper, camera etc.
 
 
 1. A FOV of 70.0 outputs 70.6
