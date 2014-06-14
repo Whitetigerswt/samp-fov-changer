@@ -38,15 +38,20 @@ stock GetPlayerFOV(playerid) {
 	// 0.667 is just a temp number until I can check what SA-MP is actually doing to these numbers, it adds decent accuracy across most playable FOV's.
 	return GetPlayerCameraZoom(playerid) + 0.667;
 }
+
+// or
+
+#define GetPlayerFOV(%0) (GetPlayerCameraZoom(%0)) + (0.667))
 ```
 
-GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS.
+GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS, so when we pass over 70, it wraps around back to 35.
 
 
-1. A FOV of 70.0 outputs 70.6.
+1. A FOV of 70.0 outputs 70.6
 2. A FOV of 71.0 outputs 35.6
 3. A FOV of 100.0 outputs 65.1 (100 - 35) 
 4. A FOV of 120.0 outputs 49.5555... (120 - 35 = 85, 85 - 70 = 15, 35 + 15 = 50, which is about what this returns).
+5. A FOV of 35.0 outputs 35.6
 
 Obviously, there is some collisions with low FOV's and high FOV's, which is why I say it's only somewhat possible for server scripters to detect FOV of clients.
 
