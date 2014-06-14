@@ -41,7 +41,7 @@ stock GetPlayerFOV(playerid) {
 
 // or
 
-#define GetPlayerFOV(%0) (GetPlayerCameraZoom(%0)) + (0.667))
+#define GetPlayerFOV(%0) ((GetPlayerCameraZoom(%0)) + (0.667))
 ```
 
 GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS, so when we pass over 70, it wraps around back to 35.
