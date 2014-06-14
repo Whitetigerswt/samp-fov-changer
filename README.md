@@ -41,12 +41,13 @@ stock GetPlayerFOV(playerid) {
 
 GetPlayerCameraZoom returns values between 35.0 and 70.0 ALWAYS.
 
-A FOV of 70.0 outputs 70.0.
-A FOV of 71.0 outputs 35.0
-A FOV of 100.0 outputs 65.1 (100 - 35) 
-A FOV of 120.0 outputs 49.5555... (120 - 35 = 85, 85 - 70 = 15, 35 + 15 = 50, which is about what this returns).
 
-Obviously, there is some collisions with low FOV's and high FOV's, which is why I say it's somewhat possible for server scripters to detect FOV of clients.
+1. A FOV of 70.0 outputs 70.0.
+2. A FOV of 71.0 outputs 35.0
+3. A FOV of 100.0 outputs 65.1 (100 - 35) 
+4. A FOV of 120.0 outputs 49.5555... (120 - 35 = 85, 85 - 70 = 15, 35 + 15 = 50, which is about what this returns).
+
+Obviously, there is some collisions with low FOV's and high FOV's, which is why I say it's only somewhat possible for server scripters to detect FOV of clients.
 
 Before and After
 -----------------
