@@ -31,6 +31,7 @@ void SetFov(float fov) {
 
 float g_fFov = 70.0f;
 float g_fZoom = 3.0f;
+float g_fAimingFov = 70.0f;
 
 DWORD dw_FovJmpBack1 = 0x0522F7E;
 void _declspec(naked) MouseSensitivityHook() {
@@ -64,9 +65,6 @@ DWORD dw_FovJmpBack4 = 0x052C160;
 void _declspec(naked) AimHook() {
 	
 	_asm fld [g_fFov]
-	_asm pushad
-	SetFov(g_fFov);
-	_asm popad
 	_asm jmp [dw_FovJmpBack4]
 
 
@@ -91,6 +89,21 @@ void _declspec(naked) SniperZoomOutHook() {
 
 }
 
+DWORD dw_FovJmpBack7 = 0x050E495;
+void _declspec(naked) AimHook2() {
+	
+	// re-do commands that were overwritten by the jmp
+	_asm sub esp,0Ch
+	_asm push ebx
+	_asm push ebp
+	// done!
+	_asm pushad
+	SetFov(g_fAimingFov);
+	_asm popad
+	_asm jmp dw_FovJmpBack7
+
+}
+
 
 
 void WINAPI Load() {
@@ -104,13 +117,16 @@ void WINAPI Load() {
 				g_fFov = value;
 			} else if(type.compare("zoom") == 0) {
 				g_fZoom = value;
+			} else if(type.compare("aiming_fov") == 0) {
+				g_fAimingFov = value;
 			}
 		}
 		ifile.close();
 	} else {
 		std::ofstream ofile("fov.cfg");
 		ofile << "fov " << g_fFov << std::endl;
-		ofile << "zoom 0.0 ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then put it as 3.0 or you will have trouble hitting people when you're using high FOV." << std::endl;
+		ofile << "fov " << g_fAimingFov << std::endl;
+		ofile << "zoom " << g_fZoom << " ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then put it as 3.0 or you will have trouble hitting people when you're using high FOV." << std::endl;
 		ofile.close();
 	}
 
@@ -145,9 +161,13 @@ void WINAPI Load() {
 	VirtualProtect((void*)0x0524BDE, 10, PAGE_EXECUTE_READWRITE, &oldProt);
 	memcpy((void*)0x0524BDE, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
-	// NOP a mov instruction to 0x0B6F250 called when you zoom all the out of a sniper
-	VirtualProtect((void*)0x0509BD0, 2, PAGE_EXECUTE_READWRITE, &oldProt);
-	memcpy((void*)0x0509BD0, "\x90\x90", 2);
+	// RET on a useless call that causes issues with sniper, and when entering a vehicle with a changed FOV.
+	VirtualProtect((void*)0x0509BC6, 6, PAGE_EXECUTE_READWRITE, &oldProt);
+	memcpy((void*)0x0509BC6, "\xC3\x90\x90\x90\x90\x90", 6);
+
+	// Hook so we can set a different FOV while aiming
+	VirtualProtect((void*)0x050E490, 5, PAGE_EXECUTE_READWRITE, &oldProt);
+	HookInstall(0x050E490, (DWORD)AimHook2, 5);
 
 	//--------------
 
