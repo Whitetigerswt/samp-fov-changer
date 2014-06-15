@@ -17,13 +17,15 @@ The mod will create fov.cfg in your GTA directory after first load. This file co
 
 it will show like this when generated (defaults):
 
-```cpp
+```
 fov 70.0
+aiming_fov 70.0
 zoom 0.0 ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then put it as 3.0 or you will have trouble hitting people when you're using high FOV.
 ```
 
-The fov field is the number you want your FOV to be, it can be any number, and can include decimals. example: 75.3 or 84.4444
-The zoom field is how quickly the game will zoom in your camera to 70.0 FOV (default fov) while aiming. This is necessary with lagcomp off to have a number higher than 0.0, or else you will have trouble hitting players.
+1. The fov field is the number you want your FOV to be, it can be any number, and can include decimals. example: 75.3 or 84.4444
+2. The aiming_fov field is the number you want your FOV to be while aiming.
+3. The zoom field is how quickly the game will zoom in your camera to your aiming FOV while aiming. This is necessary with lagcomp off to have a number higher than 0.0, or else you will have trouble hitting players.
 
 
 Server-Side FOV detection
