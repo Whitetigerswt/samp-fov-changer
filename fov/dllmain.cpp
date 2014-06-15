@@ -125,7 +125,7 @@ void WINAPI Load() {
 	} else {
 		std::ofstream ofile("fov.cfg");
 		ofile << "fov " << g_fFov << std::endl;
-		ofile << "fov " << g_fAimingFov << std::endl;
+		ofile << "aiming_fov " << g_fAimingFov << std::endl;
 		ofile << "zoom " << g_fZoom << " ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then put it as 3.0 or you will have trouble hitting people when you're using high FOV." << std::endl;
 		ofile.close();
 	}
