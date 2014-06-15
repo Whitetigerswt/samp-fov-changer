@@ -24,8 +24,8 @@ zoom 0.0 ; default 3.0, leave it as 0.0 unless you're playing lagcomp off, then 
 ```
 
 1. The fov field is the number you want your FOV to be, it can be any number, and can include decimals. example: 75.3 or 84.4444
-2. The aiming_fov field is the number you want your FOV to be while aiming.
-3. The zoom field is how quickly the game will zoom in your camera to your aiming FOV while aiming. This is necessary with lagcomp off to have a number higher than 0.0, or else you will have trouble hitting players.
+2. The aiming_fov field is the number you want your FOV to be while aiming. if your playing lagcomp off, use 70.0 fov under all circumstances, or you will have trouble hitting people.
+3. The zoom field is how quickly the game will zoom in your camera to 70.0 fov (default fov) while aiming. This is necessary with lagcomp off servers to have a number higher than 0.0, or else you will have trouble hitting players. It is also necessary for lagcomp off players to use 70.0 fov while aiming
 
 
 Server-Side FOV detection
